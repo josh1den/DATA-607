@@ -1,0 +1,111 @@
+---
+title: "DATA607_Assignment2"
+author: "Josh Iden"
+date: "2022-09-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(RMariaDB)
+library(tidyverse)
+library(dplyr)
+pw <- ""
+```
+
+## Introduction
+
+I chose six recent films and asked five friends to rate each of the movies they had seen from a scale of 1 to 5. This project follows the collection of that information and it's migration to R for further analysis.
+
+## Collecting The Data
+
+The time constraints of the project required collection of the data by text message. I created a database in a MySQL workbench to store the data in individual tables:
+
+Table 1: Friends\
+Table 2: Movies\
+Table 3: Ratings
+
+By creating separate individual tables, this allowed me avoid null values for friends who did not watch certain films, as the only observations in my master dataframe would be friends who have watched each film.
+
+The SQL code for database and table creation can be found [here](https://github.com/josh1den/DATA-607/tree/HW2/HW2).
+
+## Inspecting The Data
+
+The data was then read into R using the MariaDB library:
+
+```{r the-data}
+# store password
+pw <- pw ## password stored in a hidden cell
+
+moviesDb <- dbConnect(MariaDB(), user='josh1den', password=pw, 
+                       dbname='data607_hw2', host='localhost')
+
+# preview the tables
+dbListTables(moviesDb)
+```
+
+As you can see, the three tables are now available in R.
+
+I can inspect each individual table by writing a query:
+
+```{r querying-the-table}
+# store the query
+query1 <- "SELECT * FROM friends;"
+
+# store the friends table as a dataframe
+rs1 = dbSendQuery(moviesDb,query1)
+friends <- dbFetch(rs1)
+head(friends)
+```
+
+I write a query to join the data from the three tables to a master dataframe for analysis and disconnect from the database:
+
+```{r master-dataframe}
+# performing a join, build a master dataframe from the three tables
+query2 <- "SELECT f.name, m.title, m.genre, r.rating
+          FROM friends as f
+          JOIN ratings as r
+          ON f.id = r.friend_id
+          JOIN movies as m
+          ON m.id = r.movie_id
+          ORDER BY 1,2;"
+
+# store the friends table as a dataframe
+rs2 = dbSendQuery(moviesDb,query2)
+df <- dbFetch(rs2)
+head(df)
+```
+
+I can create an individual tibble for movies watched and average rating by friend:
+
+```{r}
+# compute the number of movies watched and avg rating by friend
+by_friend <- df %>%
+  group_by(name) %>%
+  summarize(movies_watched = n(), avg_rating = mean(rating)) %>%
+  arrange(desc(movies_watched))
+
+by_friend
+```
+
+Bianca loves movies - which is why I asked her!
+
+It would be great to look at each movie's ratings, and how many times they were watched:
+
+```{r}
+# compute the number of times watched and avg rating by movie
+by_movie <- df %>%
+  group_by(title) %>%
+  summarize(times_watched = n(), avg_rating = mean(rating)) %>%
+  arrange(desc(avg_rating))
+
+by_movie
+```
+
+We can see Nope had the highest average rating, while Top Gun was watched by the most friends.
+
+## Conclusion
+
+The data is ready for further analysis. Some visualizations that would make sense for exploratory data analysis are bar charts for the number of times each movie was watched, a bar chart for the number of movies watched per friend, and a histogram showing the frequency of ratings.
+
+Thank you for reading!
