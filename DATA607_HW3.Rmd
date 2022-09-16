@@ -1,0 +1,107 @@
+---
+title: "DATA607_HW3"
+author: "Josh Iden"
+date: "2022-09-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load-packages, message=FALSE}
+# load packages
+library(rvest)
+library(htmltab)
+library(stringr)
+library(dplyr)
+```
+
+--
+
+#### 1.Using the 173 majors listed in fivethirtyeight.com's College Majors dataset [<https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/>], provide code that identifies the majors that contain either "DATA" or "STATISTICS"
+
+```{r 1}
+# store file URL
+file <- "https://projects.fivethirtyeight.com/mid-levels/college-majors/index.html"
+data <- read_html(file)
+
+# read the table from the data
+allTables <- data %>%
+  html_table(fill=TRUE) 
+
+# select the first table as a tibble
+table1 <- allTables[[1]]
+# create a vector of the majors
+majors <- collect(select(table1, MAJOR))[[1]]
+# detect matches
+matches <- str_detect(majors, "(?i)statistics|(?i)data")
+# subset majors
+majors[matches]
+```
+
+--  
+
+#### 2. Write code that transforms the data below:
+
+[1] "bell pepper" "bilberry" "blackberry" "blood orange"\
+[5] "blueberry" "cantaloupe" "chili pepper" "cloudberry"\
+[9] "elderberry" "lime" "lychee" "mulberry"\
+[13] "olive" "salal berry"
+
+Into a format like this:\
+c("bell pepper", "bilberry", "blackberry", "blood orange", "blueberry", "cantaloupe", "chili pepper", "cloudberry", "elderberry", "lime", "lychee", "mulberry", "olive", "salal berry")
+
+```{r 2}
+text <- '[1] "bell pepper"  "bilberry"     "blackberry"   "blood orange"
+[5] "blueberry"    "cantaloupe"   "chili pepper" "cloudberry"  
+[9] "elderberry"   "lime"         "lychee"       "mulberry"    
+[13] "olive"        "salal berry"'
+
+# stringr extract_all
+words <- str_extract_all(text, regex("\\w+..\\w+"))
+# simplify list to a character vector
+unlist(words)
+```
+--  
+
+#### 3. Describe, in words, what these expressions will match:
+
+-   (.)\\1\\1\
+    *anything appearing three times in a row*
+
+-   "(.)(.)\\2\\1"\
+    *two things followed by those same two things in reverse*
+
+-   (..)\\1\
+    *any two things repeated once*
+
+-   "(.).\\1.\\1"\
+    *anything followed by anything followed by the first thing followed by anything followed by the first thing again*
+
+-   "(.)(.)(.).*\\3\\2\\1"\
+    *any three things followed by 0 or more characters of anything followed by the first three things in reverse\*
+
+--  
+
+#### 4. Construct regular expressions to match words that:
+
+-   Start and end with the same character: *"(.).+\\1\$"*
+
+```{r 4.1}
+same <- c("yay", "bcb", "dad", "roger", "maaaaan", "maaaaaaaaaam")
+str_view(same, "(.).+\\1$", match=TRUE)
+```
+
+-   Contain a repeated pair of letters (e.g. "church" contains "ch" repeated twice.): *"(..).+\\1"*
+
+```{r 4.2}
+church <- c("church", "barn", "outhouse", "papa", "eleven")
+str_view(church, "(..).+\\1", match=TRUE)
+```
+
+-   Contain one letter repeated in at least three places (e.g. "eleven" contains three "e"s.): *"([a-zA-Z]).\\1.+\\1.+"*
+
+```{r 4.3}
+str_view(church, "([a-zA-Z]).\\1.+\\1.+", match=TRUE)
+```
