@@ -1,0 +1,157 @@
+---
+title: "DATA607 Project 1"
+author: "Josh Iden"
+date: "2022-09-25"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+In this project, we take chess tournament results data from a text file and prepare it for export as .csv
+
+![](images/text_file.png)
+
+## Strategy
+
+My strategy for this project was to identify the individual steps I needed to take to transform the data from the original text file.
+
+The steps I identified to complete:  
+1. Removing |'s and -'s  
+2. Isolating the player names and ratings into their own columns  
+3. Extracting the second row of data for each observation and   adding them as additional columns to each observation.  
+4. Calculating the opposing player rating by match in order to aggregate an average.  
+
+## Data Cleaning
+
+The first step was to read the data into R. I tried several methods: first, table.read(), then read.tsv(), then I tried to read each individual line of the file into a new file. I ultimately discovered I could use read.csv, and through the arguments sep, header, skip, and colnames, I could achieve several of my cleaning goals in one line of code:
+
+```{r}
+library(tidyverse)
+url <- 'https://raw.githubusercontent.com/josh1den/DATA-607/Projects/tournamentinfo.txt'
+cols = c('player_num','name','total_pts','round_1','round_2','round_3','round_4',
+         'round_5','round_6','round_7','NA')
+df <- read.csv(url, sep="|", header=FALSE, skip=3, col.names=cols)
+head(df)
+```
+
+The next step was to remove the rows with dashes.
+
+```{r}
+# remove rows with dashes
+dashes <- "-----------------------------------------------------------------------------------------"
+df <- filter(df, player_num != dashes)
+head(df)
+```
+
+Next, I decided to create two new dataframes which I would later merge to one. The first dataframe (df1) would contain the odd number rows, and the second dataframe (df2) would contain the even number rows.
+
+```{r}
+# extract every first row
+df1 <- df %>%
+  filter(row_number() %% 2 == 1)
+
+# extract every second row
+df2 <- df %>%
+  filter(row_number() %% 2 != 1)
+```
+
+Next I used regex to extract the player rating from the name column as a new column: rating. The player ratings all followed a : followed by two or three spaces, and were digits of a minimum length of 3, maximum length of 4.
+
+```{r}
+df2 <- df2 %>%
+  mutate(rating = as.numeric(str_extract(name, "(?<=:\\s|:\\s\\s)\\d{3,4}")))
+head(df2)
+```
+
+Now I could rename the player_num column to its appropriate name, state, and by subsetting, remove the columns I don't need.
+
+```{r}
+# rename and drop unnecessary columns
+df2 <- rename(df2, state=player_num)
+df2 <- df2[c("state","rating")]
+head(df2)
+```
+
+Now I'm ready to merge the dataframes.
+
+```{r}
+# merge the dataframes
+df_new <- merge(df1, df2, by.x = 0, by.y = 0)
+head(df_new)
+```
+Steps 1, 2, and 3 are now basically complete. However, there is a little bit of tidying up to attend to. 
+
+```{r}
+# remove undesired columns
+cols_to_remove <- c("Row.names","NA.")
+df_new <- select(df_new, -cols_to_remove)
+head(df_new)
+```
+
+```{r}
+# the name column appears to have whitespace, let's trim that
+df_new$name <- str_trim(df_new$name, side = c("both"))
+head(df_new)
+```
+```{r}
+# player_num column needs to be numeric
+df_new$player_num <- as.numeric(df_new$player_num)
+head(df_new)
+```
+Now to complete the final step: calculating the average opposing player ratings. 
+
+First I start by extracting the player IDs from the round columns.
+
+```{r}
+# reduce round columns to only the player player_ids
+round_cols <- c("round_1","round_2","round_3","round_4", "round_5", "round_6", "round_7")
+
+for (col in round_cols) {
+  df_new[[col]] <- as.numeric(str_extract_all(df_new[[col]], "(?<=\\s)\\d{1,2}", simplify=TRUE)) 
+}
+
+head(df_new)
+```
+Next, I iterate through the round columns, replacing the player IDs with the player rating corresponding to the player ID.
+
+```{r}
+# loop through the rounds replacing the opposing player id with the opposing player's pre-rating
+for (row in 1:nrow(df_new)) {
+  for (col in round_cols) {
+    rating <- df_new[row, col]
+    
+    if(!is.na(rating)) {
+      df_new[row, col] <- df_new$rating[df_new$player_num == rating]
+    }
+  }
+}
+
+head(df_new)
+```
+Now that I have columns with each opposing player rating, I can create a new columns with the average of the values in the round columns.
+
+```{r}
+## calculate avg opponent rating
+df_new$avg_opposing_rating <- round(rowMeans(df_new[round_cols], na.rm=TRUE))
+
+head(df_new)
+```
+From here, it's simply a matter of selecting the desired columns for my output file.
+
+```{r}
+# select the desired output
+final <- select(df_new, c(2, 11, 3, 12, 13))
+head(final)
+```
+Writing the file to csv:
+
+```{r}
+path <- "/Users/joshiden/Documents/Classes/CUNY SPS/Fall 2022/DATA 607/Projects/Project 1.csv"
+write.csv(final, path)
+```
+
+Thanks!
