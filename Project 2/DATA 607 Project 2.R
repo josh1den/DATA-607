@@ -50,3 +50,12 @@ df2 <- read_excel(filepath, sheet=sheets[1], skip=3, col_names=cols)
 # extract desired rows
 df2_transformed <- df2[17:20,]
 head(df2_transformed)
+
+filepath <- "/Users/joshiden/Documents/Classes/CUNY SPS/Fall 2022/DATA 607/DATA-607/Project 2/artistearnings.csv"
+write.csv(df2_transformed, filepath, row.names=FALSE)
+
+# read csv from GitHub
+gh_csv <- "https://raw.githubusercontent.com/josh1den/DATA-607/Projects/Project%202/artistearnings.csv"
+df2_t <- read.csv(gh_csv)
+head(df2_t)
+df2_t[4,][1]
