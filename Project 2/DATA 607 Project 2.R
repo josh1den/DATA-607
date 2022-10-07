@@ -49,4 +49,4 @@ df2 <- read_excel(filepath, sheet=sheets[1], skip=3, col_names=cols)
 
 # extract desired rows
 df2_transformed <- df2[17:20,]
-head(df2)
+head(df2_transformed)
