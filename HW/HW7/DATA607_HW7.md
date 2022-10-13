@@ -7,7 +7,8 @@ Take the information that you’ve selected about these three books, and
 separately create three files which store the book’s information in HTML (using
 an html table), XML, and JSON formats (e.g. “books.html”, “books.xml”, and
 “books.json”). To help you better understand the different file structures, I’d
-prefer that you create each of these files “by hand” unless you’re already very comfortable with the file formats. Write R code, using your packages of choice,
+prefer that you create each of these files “by hand” unless you’re already very
+comfortable with the file formats. Write R code, using your packages of choice,
 to load the information from each of the three sources into separate R data
 frames. Are the three data frames identical?
 

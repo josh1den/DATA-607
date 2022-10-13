@@ -1,0 +1,25 @@
+{
+    "books":[
+      {
+        "title":"Other Terrors: An Inclusive Anthology",
+        "author":"Vince Liaguno and Rena Mason",
+        "genre":"Horror, Fiction",
+        "published":"2022",
+        "pages":"363"
+      },
+      {
+        "title":"The Book Of Accidents",
+        "author":"Chuck Wendig",
+        "genre":"Horror, Fiction",
+        "published":"2021",
+        "pages":"560",
+      },
+      {
+        "title":"The Rim Of Morning: Two Tales of Cosmic Horror",
+        "author":"William Sloane",
+        "genre":"Horror, Fiction",
+        "published":"2015",
+        "pages":"480",
+      }
+    ]
+}
