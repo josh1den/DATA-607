@@ -19,34 +19,29 @@ the web].
 
 ### BOOKS ###
 
-/*
 ------
 Book 1
 ------
-Title: Other Terrors: An Inclusive Anthology
-Author: Vince Liaguno and Rena Mason
-Genre: Horror, Fiction
-Published: 2022
-Pages: 363
+Title: Other Terrors: An Inclusive Anthology  
+Author: Vince Liaguno and Rena Mason  
+Genre: Horror, Fiction  
+Published: 2022  
+Pages: 363  
+
+------  
+Book 2  
+------  
+Title: The Book Of Accidents  
+Author: Chuck Wendig  
+Genre: Horror, Fiction  
+Published: 2021  
+Pages: 560  
 
 ------
-Book 2
-------
-Title: The Book Of Accidents
-Author: Chuck Wendig
-Genre: Horror, Fiction
-Published: 2021
-Pages: 560
-
-------
-Book 3
-------
-Title: The Rim Of Morning: Two Tales of Cosmic Horror
-Author: William Sloane
-Genre: Horror, Fiction
-Published: 2015
-Pages: 480
-*/
-
-
-### WRITING TO HTML TABLE###
+Book 3  
+------  
+Title: The Rim Of Morning: Two Tales of Cosmic Horror  
+Author: William Sloane  
+Genre: Horror, Fiction  
+Published: 2015  
+Pages: 480  
