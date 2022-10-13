@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<books>
+    <book>
+      <title>Other Terrors: An Inclusive Anthology</title>
+      <author>Vince Liaguno and Rena Mason</author>
+      <genre>Horror, Fiction</genre>
+      <published>2022</published>
+      <pages>363</pages>
+    </book>
+    <book>
+      <title>The Book Of Accidents</title>
+      <author>Chuck Wendig</author>
+      <genre>Horror, Fiction</genre>
+      <published>2021</published>
+      <pages>560</pages>
+    </book>
+    <book>
+      <title>The Rim Of Morning: Two Tales of Cosmic Horror</title>
+      <author>William Sloane</author>
+      <genre>Horror, Fiction</genre>
+      <published>2015</published>
+      <pages>480</pages>
+    </book>
+  </books>
