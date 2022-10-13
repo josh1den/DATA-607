@@ -1,0 +1,11 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/953612/f0a7114e2fb143e4a472722ec0e25062
+bundleId: https://api.rpubs.com/api/v1/document/953612/f0a7114e2fb143e4a472722ec0e25062
+url: http://rpubs.com/josh1den/953612
+when: 1665345160.2584
+lastSyncTime: 1665345160.25842
