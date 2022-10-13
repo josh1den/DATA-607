@@ -1,0 +1,200 @@
+---
+title: "DATA 607 Project 2"
+author: "Josh Iden"
+date: "2022-10-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+### Project 2
+
+The goal of this assignment is to practice preparing untidy datasets for downstream analysis.
+
+Load packages:
+
+```{r}
+library(tidyverse)
+library(stringr) 
+library(readxl)
+```
+
+#### Dataset 1
+
+For the first dataset, I chose the following data selected by Jhalak Das [source:](https://gist.github.com/Kimmirikwa/b69d0ea134820ea52f8481991ffae93e#file-student_results-csv):
+
+![](/Users/joshiden/Downloads/untidydata.png)
+
+Read the file into R:
+
+```{r}
+file <- "https://raw.githubusercontent.com/josh1den/DATA-607/Projects/Project%202/jhalak_das_untidy.csv"
+df1 <- read.csv(file)
+head(df1)
+```
+
+```{r}
+# split up sex and age
+# test column to single int
+# pivot term columns to single column, term, column: grade
+
+df1_clean <- df1 |>
+  separate(col=sex.and.age, into=c("sex","age"), sep="_", convert=TRUE) |>
+  rename(test = test.number) |>
+  mutate(test = as.integer(str_extract_all(test, "([0-3])"))) |>
+  pivot_longer(cols=c("term.1","term.2", "term.3"), names_to="term",
+               names_pattern="([0-3])", values_to = "grade") |>
+  arrange(name)
+
+df1_clean
+```
+
+What is the average test score by area code (which also happens to be by student)?
+
+```{r}
+# average test score by area code
+
+area_code <- df1_clean |>
+  group_by(name, phone) |>
+  summarize(avg_test_score = mean(grade)) |> 
+  arrange(desc(avg_test_score))
+
+area_code
+```
+
+Finally, saving the clean dataframe to .csv for later use.
+
+```{r}
+path1 <- "/Users/joshiden/Documents/Classes/CUNY SPS/Fall 2022/DATA 607/DATA-607/Project 2/df1_clean.csv"
+write.csv(df1_clean, path1)
+```
+
+#### Dataset 2
+
+For the second datasest, I chose data that I found and provided from the [National Endowment for the Arts](https://www.arts.gov/impact/research/arts-data-profile-series/adp-31) comparing median income for arts with the overall U.S. Labor Force:
+
+![](/Users/joshiden/Downloads/1data.png)
+
+This data was challenging, as it existed only in .xlsx format. As such, I decided to the data into R using readxl.
+
+```{r}
+# read file in from local machine
+filepath <- "/Users/joshiden/Documents/Classes/CUNY SPS/Fall 2022/DATA 607/DATA-607/Project 2/Table1aArtistProfile.xlsx"
+# read sheet names
+sheets <- excel_sheets(filepath)
+df2 <- read_excel(filepath, sheet=sheets[1], skip=1)
+head(df2)
+```
+
+This analysis focuses on comparing median income between different types of artists with the overall U.S. Labor Force, so I determined to select the observations needed, which also allowed me to eliminate NA rows and columns. I also determined that the desired data would need to go from wide to long format, as the columns all represented observations I am interested in. However, in order to pivot, I needed to define the first column.
+
+```{r}
+# get the desired column names
+colnames <- colnames(df2)
+
+# create the list of desired column names 
+cols <- toupper(colnames(df2)) |>
+  replace(1, "DEMOGRAPHIC")
+
+# re-read the sheet
+df2 <- read_excel(filepath, sheet=sheets[1], skip=3, col_names=cols)
+
+# extract desired rows
+df2_transformed <- df2[17:20,]
+head(df2_transformed)
+```
+
+Now that the data exists in a structure I can work with, I write the file to .csv and upload to GitHub in order to work with the file as a .csv per the project instructions, and read the new .csv file into R.
+
+```{r}
+filepath <- "/Users/joshiden/Documents/Classes/CUNY SPS/Fall 2022/DATA 607/DATA-607/Project 2/artistearnings.csv"
+write.csv(df2_transformed, filepath, row.names=FALSE)
+
+# read csv from GitHub
+gh_csv <- "https://raw.githubusercontent.com/josh1den/DATA-607/Projects/Project%202/artistearnings.csv"
+df2t <- read.csv(gh_csv)
+head(df2t)
+```
+
+Data tidying:
+
+```{r}
+# replace value names in demographic column
+df2t$DEMOGRAPHIC <- df2t$DEMOGRAPHIC |>
+  replace(1, "MEDIAN") |>
+  replace(4, "RATIO") |>
+  toupper()
+
+# dancers column to integer
+df2t$DANCERS.AND.CHOREOGRAPHERS <- gsub("\\*", NaN, df2t$DANCERS.AND.CHOREOGRAPHERS) |>
+  as.integer()
+
+# pivot long
+df2t_pivoted <- df2t |> 
+  pivot_longer(cols=2:14, names_to="TYPE", values_to="MEDIAN_INCOME") |>
+  filter(DEMOGRAPHIC == "MEDIAN") |>
+  select(2:3) |>
+  arrange(desc(MEDIAN_INCOME))
+  
+head(df2t_pivoted)
+```
+
+Saving the pivoted data for further analysis,
+
+```{r}
+path2 <- "/Users/joshiden/Documents/Classes/CUNY SPS/Fall 2022/DATA 607/DATA-607/Project 2/df2_clean.csv"
+write.csv(df2t_pivoted, path2)
+```
+
+Now I plot the data comparing median artist income by type with the overall U.S. Labor Force:
+
+```{r}
+ggplot(df2t_pivoted, aes(x=reorder(TYPE, MEDIAN_INCOME), y=MEDIAN_INCOME)) +
+  geom_col() +
+  coord_flip() +
+  theme_minimal() +
+  labs(x = "TYPE")
+```
+
+#### Dataset 3
+
+For the third dataset, I chose data selected by Seung Min Song:
+
+![](/Users/joshiden/Downloads/Screen%20Shot%202022-10-09%20at%203.43.02%20PM.png)
+
+This data was pretty straightforward, with the goal of comparing admissions by gender:
+
+```{r}
+url <- "https://raw.githubusercontent.com/josh1den/DATA-607/Projects/Project%202/seungminsong_das_unitdy.csv"
+df3 <- read.csv(url)
+
+head(df3)
+```
+
+This data required simple pivoting to achieve the desired output:
+
+```{r}
+df3_pivoted <- df3 |>
+  pivot_longer(cols=c("Admitted", "Rejected"), names_to="Admit",
+               values_to="Count") |>
+  group_by(Gender, Admit) |>
+  summarize(Total = sum(Count))
+
+df3_pivoted
+```
+
+Writing the pivoted data to file:
+
+```{r}
+path3 <- "/Users/joshiden/Documents/Classes/CUNY SPS/Fall 2022/DATA 607/DATA-607/Project 2/df3_clean.csv"
+write.csv(df3_pivoted, path3)
+```
+
+Visualizing the admitted and rejected outcomes by gender:
+
+```{r}
+ggplot(df3_pivoted, aes(x=Admit, y=Total, fill=Gender)) +
+  geom_col(position="dodge")
+```
