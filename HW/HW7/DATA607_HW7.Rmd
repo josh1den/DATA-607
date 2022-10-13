@@ -1,0 +1,74 @@
+---
+title: "DATA607_HW7"
+author: "Josh Iden"
+date: "2022-10-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+For this assignment, I picked three books from one of my favorite genres: horror fiction, and created three files in which I stored each book's information, and read each file into R:
+
+[HTML](https://github.com/josh1den/DATA-607/blob/main/HW/HW7/DATA607_HW7.html)
+
+[XML](https://github.com/josh1den/DATA-607/blob/main/HW/HW7/DATA607_HW7.xml)
+
+[JSON](https://github.com/josh1den/DATA-607/blob/main/HW/HW7/DATA607_HW7.json)
+
+## Reading Into R
+
+For this assignment, I utilized the tidyverse package in order to pipe my data into R for readability. The individual packages I will note with their corresponding file formats for comprehension.
+
+```{r}
+library(tidyverse)
+```
+
+## Reading HTML
+
+```{r}
+library(htmltab)
+
+file <- "https://raw.githubusercontent.com/josh1den/DATA-607/main/HW/HW7/DATA607_HW7.html"
+html <- htmltab(file, which = 1) |>
+        as.data.frame()
+print(html)
+```
+
+## Reading XML
+
+```{r}
+library(XML)
+library(xml2)
+file <- "https://raw.githubusercontent.com/josh1den/DATA-607/main/HW/HW7/DATA607_HW7.xml"
+
+xml <- xml2::read_xml(file) |>
+       XML::xmlParse() |>
+       XML::xmlToDataFrame()
+
+print(xml)
+```
+
+## Reading JSON
+
+```{r}
+library(rjson)
+file <- "https://raw.githubusercontent.com/josh1den/DATA-607/main/HW/HW7/DATA607_HW7.json"
+json <- fromJSON(file=file) |>
+        as.data.frame()
+print(json)
+```
+While the HTML and XML dataframes each approximate one another, the JSON does not. 
+Upon investigation, I discovered that the format of my JSON was providing challenges I was unable to resolve. By [altering my JSON format](https://github.com/josh1den/DATA-607/blob/main/HW/HW7/DATA607_HW7_V2.json), I was able to read in to R delivering an output equivalent to those of the XML and HTML formats:
+
+```{r}
+file_v2 <- "https://raw.githubusercontent.com/josh1den/DATA-607/main/HW/HW7/DATA607_HW7_V2.json"
+json_v2 <- fromJSON(file=file_v2) |>
+           as.data.frame()
+print(json_v2)
+```
+
+While I did not resolve the output challenge for the first version JSON file, one insight I glean from this is that JSON formatting can have a major effect on its output, and understanding the structure of your source file is essential to crafting code to achieve the desired output. 
