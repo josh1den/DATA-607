@@ -57,10 +57,13 @@ write.csv(df2_transformed, filepath, row.names=FALSE)
 # read csv from GitHub
 gh_csv <- "https://raw.githubusercontent.com/josh1den/DATA-607/Projects/Project%202/artistearnings.csv"
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 df2_t <- read.csv(gh_csv)
 head(df2_t)
 df2_t[4,][1]
 =======
+=======
+>>>>>>> Stashed changes
 df2t <- read.csv(gh_csv)
 head(df2t)
 
@@ -110,5 +113,9 @@ df3_pivoted <- df3 |>
 df3_pivoted
 
 ggplot(df3_pivoted, aes(x=Admit, y=Total, fill=Gender)) +
+<<<<<<< Updated upstream
+  geom_col(position="dodge")
+>>>>>>> Stashed changes
+=======
   geom_col(position="dodge")
 >>>>>>> Stashed changes

@@ -1,10 +1,16 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 library(tidyverse)
 library(readxl)
 library(stringr)
 library(lubridate)
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 #general skills
 gs <- "https://raw.githubusercontent.com/himalayahall/DATA607-PROJECT3/main/general_skills.csv"
@@ -16,6 +22,7 @@ general_skills <- read.csv(gs)
 software_skills <- read.csv(ss)
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 #union the dataframes
 skills_in_demand <- rbind(general_skills, software_skills)
 
@@ -23,6 +30,8 @@ skills_in_demand <- rbind(general_skills, software_skills)
 path <- "/Users/joshiden/Documents/Classes/CUNY SPS/Fall 2022/DATA 607/Projects/skills_in_demand.csv"
 write.csv(skills_in_demand, path)
 =======
+=======
+>>>>>>> Stashed changes
 #fix typo in general_skills "category" column
 general_skills$CATEGORY <- gsub("GERERAL", "GENERAL", general_skills$CATEGORY)
 
@@ -90,4 +99,7 @@ path <- "/Users/joshiden/Documents/Classes/CUNY SPS/Fall 2022/DATA 607/Projects/
 write.csv(skills_in_demand, path, row.names=FALSE)
 
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
