@@ -40,7 +40,9 @@ As you'll see in this presentation, GitHub offers powerful tools integrating som
 
 **New to GitHub?**
 If you're new to using GitHub, the first place to start is the documentation.
-For our more experienced classmates, as I go through this presentation, please share any resources in the chat that you found useful, and at the conclusion of the presentation I'll add these links to my slides. 
+For our more experienced classmates, as I go through this presentation, please share any resources in the chat that you found useful, and at the conclusion of the presentation I'll add these links to my slides.
+
+
 ---
 
 Closing:
