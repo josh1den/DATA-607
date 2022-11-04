@@ -1,0 +1,79 @@
+---
+title: "DATA607 HW11"
+author: "Josh Iden"
+date: "2022-11-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Introduction
+
+In this assignment, I'm tasked to apply some sentiment analysis base code from chapter 2 in [Text Mining With R](https://www.tidytextmining.com/) and apply it to a corpus of my choosing.
+
+#### The Code
+
+First let's take a look at the code from chapter 2. The code features the following package dependencies:
+
+```{r packages messages=FALSE}
+library(tidytext)
+library(tidyverse)
+library(janeaustenr)
+```
+About the packages:
+
+**tidytext** provides functions for tidying text
+**janeaustenr** is a sample dataset of Jane Austen's 6 novels for text analysis. 
+
+##### Loading Data
+
+First we'll load joy words from the [NRC lexicon](https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm) and the Jane Austen dataset, which we'll also tidy.
+
+```{r}
+#load nrc lexicon, filtering for joy
+nrcjoy = tidytext::get_sentiments("nrc") |>
+  filter(sentiment == "joy")
+# load and tidy the jane austen data
+tidy_books = austen_books() |>
+  group_by(book) |>
+  mutate(linenumber = row_number(),
+         chapter = cumsum(str_detect(text, regex("^chapter [\\divxlc]", ignore_case=TRUE)))) |>
+  ungroup() |>
+  tidytext::unnest_tokens(word, text)
+```
+
+Let's take a look at the output files:
+
+```{r}
+head(nrcjoy)
+```
+```{r}
+head(tidy_books)
+```
+##### Calculating Sentiment
+
+Now we'll combine the nrc sentiment data with the Jane Austin data to get a count of joy words that appear in the novel "Emma". 
+
+```{r}
+tidy_books |>
+  filter(book == "Emma") |>
+  inner_join(nrcjoy) |>
+  count(word, sort=TRUE)
+```
+
+We can also use the [BING](https://emilhvitfeldt.github.io/textdata/reference/lexicon_bing.html) lexicon which assigns a binary value to each word (positive or negative) to calculate a net sentiment.
+
+```{r}
+# calculate a net sentiment
+janeaustensentiment = tidy_books |>
+  inner_join(get_sentiments("bing")) |>
+  count(book, index = linenumber %/% 80, sentiment) |>
+  spread(sentiment, n, fill = 0) |>
+  mutate(sentiment = positive - negative)
+
+head(janeaustensentiment)
+```
+
+#### A New Corpus
