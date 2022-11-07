@@ -17,7 +17,7 @@ In this assignment, I'm tasked to apply some sentiment analysis base code from c
 
 First let's take a look at the code from chapter 2. The code features the following package dependencies:
 
-```{r packages messages=FALSE}
+```{r packages, message=FALSE}
 library(tidytext)
 library(tidyverse)
 library(janeaustenr)
@@ -77,3 +77,75 @@ head(janeaustensentiment)
 ```
 
 #### A New Corpus
+
+I'm going to take a look at some unlabeled [book reviews](https://www.cs.jhu.edu/~mdredze/datasets/sentiment/index2.html).
+
+```{r, message=FALSE}
+library(rvest)
+file = "https://raw.githubusercontent.com/josh1den/DATA-607/main/HW/HW11/book_unlabeled.html"
+
+#using rvest to read in the file
+data = rvest::read_html(file)
+```
+
+Parse the data into a dataframe:
+
+```{r}
+books = data.frame(
+  id = data |> html_elements("asin") |> html_text2(),
+  product_name = data |> html_elements("product_name") |> html_text2(),
+  helpful = data |> html_elements("helpful") |> html_text2(),
+  rating = data |> html_elements("rating") |> html_text2(),
+  review = data |> html_elements("review_text") |> html_text2()
+)
+```
+
+View the parsed data:
+
+```{r}
+head(books)
+```
+Split the titles, drop unnecessary columns:
+
+```{r}
+books[c("title","category","author")] = str_split_fixed(books$product_name, ': ', 3)
+books = books |>
+  select(c("id","title","author","rating","helpful","review"))
+head(books)
+```
+Now let's take a look at count of positive and negative words that appear in reviews for Child of God:
+
+```{r}
+cog = books |> 
+  filter(title == "Child of God") |>
+  select("review") |>
+  unnest_tokens(word, review) |>
+  inner_join(get_sentiments("bing")) |>
+  count(word, sentiment) |>
+  pivot_wider(names_from=sentiment, values_from=n, values_fill=0) |>
+  mutate(sentiment = positive - negative)
+
+head(cog)
+```
+
+Now let's look at the total sentiment score for Child of God and compare it to its mean rating:
+
+```{r}
+sum(cog$sentiment)
+```
+
+The total sentiment for Child of God based on its user reviews is -16, or slightly negative. Let's take a look at its average overall rating:
+
+```{r}
+books |>
+  filter(title == "Child of God") |>
+  mutate(rating = as.numeric(rating)) |>
+  group_by(title) |>
+  summarize(mean_rating = mean(rating))
+
+```
+This is a positive rating on a scale of 1 - 5.
+
+#### Conclusion
+
+One set of criteria is not enough to establish a sentiment analysis. Allowing more time in future projects, to use multiple lexicons and compare how overall products relate to user ratings would provide valuable context to understanding consumer sentiment. 
