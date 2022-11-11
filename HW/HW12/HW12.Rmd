@@ -1,0 +1,71 @@
+---
+title: "DATA607 HW12"
+author: "Josh Iden"
+date: "2022-11-11"
+output: 
+  rmdformats::html_clean
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Recommender Systems
+
+## Assignment Overview
+
+Your task is to analyze an existing recommender system that you find interesting. You should:
+
+1.  Perform a Scenario Design analysis as described below. Consider whether it makes sense for your selected recommender system to perform scenario design twice, once for the organization (e.g. Amazon.com) and once for the organization's customers.
+
+2.  Attempt to reverse engineer what you can about the site, from the site interface and any available information that you can find on the Internet or elsewhere.
+
+3.  Include specific recommendations about how to improve the site's recommendation capabilities going forward.
+
+4.  Create your report using an R Markdown file, and create a discussion thread with a link to the GitHub repo where your Markdown file notebook resides. You are not expected to need to write code for this discussion assignment.
+
+## Introduction
+
+There are very few comparable joys for me in life than finding myself completely absorbed in a book. It activates an imaginative part of my brain distinct from most other facets of my daily life. So I make time every day to read for pleasure. Last year I started using [Goodreads](https://www.goodreads.com/) as way to keep track of, and offer ratings and reviews of, books I have read. Rating and reviewing a book is one way to support an author, and a small effort on my part to express gratitude for books that enrich my life. I also follow a few writers and friends whose tastes I respect, and take into account their ratings and reviews when considering future books to read. Goodreads takes all of this information and more into account and provides recommendations based on a number of criteria.
+
+## Scenario Design Analysis
+
+**1) Who are your target users?**
+
+We can bucket the targeted users into two groups: consumers and producers, which we might define as readers, and more generally, writers. Let's assume the "writers" category to include publishers and critics in addition to authors.
+
+**2) What are their key goals?**
+
+For readers, the key goal is discovering books they will enjoy. This will lead to greater platform and recommender system engagement and adoption, which will drive opportunity to market to writers.
+
+For writers, the key goal is to sell more books and identify their target audience in order to maximize marketing resources. The more powerful and reliable the insights Goodreads is able to provide to writers, the more money they are able to demand for their resources.
+
+**3) How can you help them accomplish this goal?**
+
+Readers want to see books that they are likely to enjoy based on what they have read, which authors they like, and what their favorite authors or friends recommend. They want reliable ratings.
+
+Writers want to know who to market their books to. They need tools to target their book promotion to the readers who are most likely to engage based on their activity.
+
+## Reverse Engineer
+
+There are several ways I believe Goodreads makes it recommendations to readers and writers:
+
+**Collaborative Filtering** Reader ratings are compared with books their friends have read as well as with readers who assigned similar ratings to the same book.
+
+**Cluster Models** Readers are grouped into clusters based on proximity to some predefined group mean -- for example, a reader is grouped with other readers who rate books from the Horror genre at certain value, and our recommended books based on their grouping. This is particularly useful to writers.
+
+**Item to Item Based Methods** Readers are provided recommended based on other books read by readers of the same book. This is less specific (and less valuable) as a recommendation, because it doesn't take into account additional variables such as genre, and doesn't extend to constrain recommendations based on a similar rating.
+
+## Recommendations
+
+**1)** Provide an average rating for a book based on users who have similar book ratings as the reader. Ie, the average rating for this book amongst readers who have given "x" book the same rating is...
+
+**2)** Cluster groups based on frequency - ie, comparing ratings between readers who read a book in a week as opposed to three months in order to compare readers who read at a similar rate.
+
+**3)** Unrated books represent a hard to quantify grey area. I personally will not rate a book I don't enjoy unless I find it in some way offensive (which is rare). However, many people don't assign any ratings at all to their books. A rating score does not have the same value to all readers. Is a 4/5 for a reader whose average rating is 4.2 as good a score as a 4/5 from a reader whose average rating is a 2.8? Recommendations based on distance from the mean rating could prove valuable to those readers.
+
+## Conclusion
+
+One of the main challenges to recommending books based on ratings as we've described is variability of the ratings system from one reader to the next. Other metrics such as speed and variability from average rating could provide valuable insights to readers and writers.
+
+I hope you've enjoyed this report. If you'd like to see which books I've been reading lately or connect, find me on [Goodreads](https://www.goodreads.com/user/show/146171501-josh-iden)!
